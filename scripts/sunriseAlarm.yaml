@@ -15,12 +15,18 @@ blueprint:
       default: "6:30:00"
       selector:
         time: {}
-    # check_entity:
-    #   name: Additional entity to check before sunrise is triggered
-    #   description: If set, checks if entity is 'on' or 'home' before triggering. Use e.g. a (workday) sensor, device_tracker or person entity.
-    #   default: none
-    #   selector:
-    #     entity: {}
+    ignore_future_alarms:
+      name: Ignore future alarms
+      description: If enabled, alarms set for future dates will be ignored and the manual time will be used instead.
+      default: false
+      selector:
+        boolean: {}
+    check_entity:
+      name: Additional entity to check before sunrise is triggered
+      description: If set, checks if entity is 'on' or 'home' before triggering. Use e.g. a (workday) sensor, device_tracker or person entity.
+      default: none
+      selector:
+        entity: {}
     sunrise_duration:
       name: Sunrise duration
       description: The sunrise will start the configured number of minutes before the timestamp.
