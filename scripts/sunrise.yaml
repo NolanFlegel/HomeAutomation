@@ -1,0 +1,37 @@
+alias: Sunrise Alarm
+description: 'Simulate Spring Sunrise'
+trigger:
+  - platform: time
+    at: '06:00:00'
+condition:
+  - condition: time
+    after: '00:00'
+    before: '23:59'
+    weekday:
+      - mon
+      - tue
+      - wed
+      - thu
+      - fri
+      - sat
+      - sun
+action:
+  - service: light.turn_on
+    target:
+      entity_id: light.bedroom_lamps
+    data:
+      color_temp: 369
+      brightness_pct: 1
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - service: light.turn_on
+    data:
+      transition: 900
+      color_temp: 369
+      brightness_pct: 100
+    target:
+      entity_id: light.bedroom_lamps
+mode: single
