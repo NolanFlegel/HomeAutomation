@@ -90,7 +90,7 @@ blueprint:
         action: {}
 variables:
   light_entity: !input "light_entity"
-  # sensor: !input "timestamp_sensor"
+  sensor: !input "timestamp_sensor"
   sunrise_duration: !input "sunrise_duration"
   start_brightness: !input "start_brightness"
   end_brightness: !input "end_brightness"
