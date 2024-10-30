@@ -9,31 +9,12 @@ blueprint:
       selector:
         entity:
           domain: light
-    timestamp_sensor:
-      name: Alarm timestamp sensor
-      description: "Sensor with timestamp of next alarm with device_class: timestamp (set to 'none' for manual alarm time)"
-      default: none
-      selector:
-        entity:
-          device_class: timestamp
     manual_time:
       name: Manual alarm time
       description: Time to trigger alarm
       default: "6:30:00"
       selector:
         time: {}
-    ignore_future_alarms:
-      name: Ignore future alarms
-      description: If enabled, alarms set for future dates will be ignored and the manual time will be used instead.
-      default: false
-      selector:
-        boolean: {}
-    check_entity:
-      name: Additional entity to check before sunrise is triggered
-      description: If set, checks if entity is 'on' or 'home' before triggering. Use e.g. a (workday) sensor, device_tracker or person entity.
-      default: none
-      selector:
-        entity: {}
     sunrise_duration:
       name: Sunrise duration
       description: The sunrise will start the configured number of minutes before the timestamp.
@@ -90,7 +71,7 @@ blueprint:
         action: {}
 variables:
   light_entity: !input "light_entity"
-  sensor: !input "timestamp_sensor"
+  # sensor: !input "timestamp_sensor"
   sunrise_duration: !input "sunrise_duration"
   start_brightness: !input "start_brightness"
   end_brightness: !input "end_brightness"
@@ -101,29 +82,13 @@ variables:
   start_mired: "{{state_attr(light_entity, 'max_mireds')}}"
   end_mired: "{{[state_attr(light_entity, 'min_mireds')|int(0), min_mired|int(0)]|max}}"
   tick_time: "{{float(seconds) / float(range_brightness)}}"
-  check_entity: !input "check_entity"
-  ignore_future_alarms: !input "ignore_future_alarms"
 trigger:
   - platform: time_pattern
     minutes: "*"
 condition: []
 action:
   - variables:
-      sensor_time: >
-        {% if sensor != 'none' and states(sensor) != 'unavailable' and as_timestamp(states(sensor)) %}
-          {% if ignore_future_alarms and as_timestamp(states(sensor)) | timestamp_custom('%Y-%m-%d') > now().strftime('%Y-%m-%d') %}
-            {{ states('sensor.date') ~ ' ' ~ manual_time }}
-          {% else %}
-            {{ states(sensor) }}
-          {% endif %}
-        {% else %}
-          {{ states('sensor.date') ~ ' ' ~ manual_time }}
-        {% endif %}
-  - wait_template: "{{ sensor == 'none' or as_timestamp(states(sensor), None) != None }}"
-  - wait_template: "{{ 0 < 
-      as_timestamp(states(sensor) if sensor != 'none' else today_at(manual_time)) - as_timestamp(now())
-      <= float(seconds)
-      and states(check_entity) in ['unknown', 'on', 'home'] }}"
+      sensor_time: "{{ manual_time }}"
   - choose: []
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
