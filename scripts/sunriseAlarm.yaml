@@ -119,8 +119,11 @@ action:
         {% else %}
           {{ states('sensor.date') ~ ' ' ~ manual_time }}
         {% endif %}
-  - wait_template: >
-      {{ 0 < as_timestamp(sensor_time) - as_timestamp(states('sensor.date_time_iso')) <= float(seconds) and states(check_entity) in ['unknown', 'on', 'home'] }}
+  - wait_template: "{{ sensor == 'none' or as_timestamp(states(sensor), None) != None }}"
+  - wait_template: "{{ 0 < 
+      as_timestamp(states(sensor) if sensor != 'none' else today_at(manual_time)) - as_timestamp(now())
+      <= float(seconds)
+      and states(check_entity) in ['unknown', 'on', 'home'] }}"
   - choose: []
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
