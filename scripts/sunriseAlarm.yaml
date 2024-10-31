@@ -99,7 +99,7 @@ action:
       while:
         - condition: template
           value_template: >
-            {{ 0 < as_timestamp(sensor_time) - as_timestamp(now()) <= float(seconds) }}
+            {{ 0 < float(as_timestamp(sensor_time, now())) - float(as_timestamp(now(), now())) <= float(seconds) }}
       sequence:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
