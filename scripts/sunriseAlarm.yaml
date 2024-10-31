@@ -93,8 +93,8 @@ action:
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
     data:
-      brightness: "{{ start_brightness | float(100) }}"
-      color_temp: "{{ start_kelvin | float(6500) }}"
+      brightness: "{{ float(100) }}"
+      color_temp: "{{ float(6500) }}"
     entity_id: !input "light_entity"
   - repeat:
       while:
@@ -105,8 +105,8 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: "{{ end_brightness }}"
-            color_temp: "{{ end_kelvin }}"
+            brightness: "{{ float(25)}}"
+            color_temp: "{{ float(4200) }}"
           entity_id: !input "light_entity"
   - choose: []
     default: !input "post_sunrise_actions"
