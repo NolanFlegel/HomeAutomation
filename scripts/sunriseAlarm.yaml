@@ -89,12 +89,14 @@ condition: []
 action:
   - variables:
       sensor_time: "{{ today_at(manual_time) }}"
+      kelvin_steps: "{{ float(end_kelvin) - float(start_kelvin) / sunrise_duration }}"
+      brightness_steps: "{{ float(end_brightness) - float(start_brightness) / sunrise_duration }}"
   - choose: []
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
     data:
-      brightness: "{{ int(100) }}"
-      color_temp: "{{ int(6500) }}"
+      brightness: "{{ float(start_brightness | int(10) }}"
+      color_temp: "{{ float(start_kelvin | float(2500) }}"
     entity_id: !input "light_entity"
   - repeat:
       while:
@@ -105,8 +107,8 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: "{{ float(25)}}"
-            color_temp: "{{ float(4200) }}"
+            brightness: "{{ states.light_entity.attributes.brightness + brightness_steps }}"
+            color_temp: "{{ states.light_entity.attributes.color_temp_kelvin + kelvin_steps }}"
           entity_id: !input "light_entity"
   - choose: []
     default: !input "post_sunrise_actions"
