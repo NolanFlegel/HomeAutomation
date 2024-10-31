@@ -2,6 +2,13 @@ blueprint:
   name: Wake-up light alarm with sunrise effect
   description: "Brightness and color temperature sunrise effect"
   domain: automation
+  input_datetime:
+      manual_time:
+        name: Manual alarm time
+        description: Time to trigger alarm
+        default: "06:30:00"
+        has_date: false
+        has_time: true
   input:
     light_entity:
       name: Wake-up light entity
@@ -9,13 +16,6 @@ blueprint:
       selector:
         entity:
           domain: light
-    input_datetime:
-      manual_time:
-        name: Manual alarm time
-        description: Time to trigger alarm
-        default: "06:30:00"
-        has_date: false
-        has_time: true
     sunrise_duration:
       name: Sunrise duration
       description: The sunrise will start the configured number of minutes before the timestamp.
