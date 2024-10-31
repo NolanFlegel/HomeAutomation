@@ -105,8 +105,8 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: "{{float(60)}}"
-            color_temp: "{{float(end_kelvin)}}"
+            brightness: "{{ end_brightness }}"
+            color_temp: "{{end_kelvin}}"
           entity_id: !input "light_entity"
   - choose: []
     default: !input "post_sunrise_actions"
