@@ -9,12 +9,13 @@ blueprint:
       selector:
         entity:
           domain: light
-    manual_time:
-      name: Manual alarm time
-      description: Time to trigger alarm
-      default: "6:30:00"
-      selector:
-        time: {}
+    input_datetime:
+      manual_time:
+        name: Manual alarm time
+        description: Time to trigger alarm
+        default: "06:30:00"
+        has_date: false
+        has_time: true
     sunrise_duration:
       name: Sunrise duration
       description: The sunrise will start the configured number of minutes before the timestamp.
