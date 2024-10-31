@@ -33,30 +33,30 @@ blueprint:
       selector:
         number:
           min: 1.0
-          max: 255.0
+          max: 100.0
           step: 1.0
           mode: slider
     end_brightness:
       name: Maximum brightness
       description: The brightness will be transitioned from the minimum to the configured value.
-      default: 254
+      default: 80
       selector:
         number:
           min: 5.0
-          max: 255.0
+          max: 100.0
           step: 1.0
           mode: slider
-    min_mired:
-      name: Minimum color temperature
-      description: "The minimum color temperature to use. (0: lowest supported)"
-      default: 0
+    end_kelvin:
+      name: Max color temperature
+      description: "Max color tempurature (lowest supported: 2000)"
+      default: 4000.0
       selector:
         number:
-          min: 0.0
-          max: 500.0
-          step: 5.0
+          min: 2000.0
+          max: 6500.0
+          step: 50.0
           mode: slider
-          unit_of_measurement: mired
+          unit_of_measurement: kelvin
     pre_sunrise_actions:
       name: Pre-sunrise actions
       description: Optional actions to run before sunrise starts.
@@ -77,9 +77,10 @@ variables:
   range_brightness: "{{float(end_brightness)-float(start_brightness)}}"
   manual_time: !input "manual_time"
   seconds: "{{float(sunrise_duration) * 60}}"
-  min_mired: !input "min_mired"
-  start_mired: "{{state_attr(light_entity, 'max_mireds')}}"
-  end_mired: "{{[state_attr(light_entity, 'min_mireds')|int(0), min_mired|int(0)]|max}}"
+  start_kelvin: "{{float(2000)}}"
+  end_kelvin: !input "max_kelvin"
+  # start_kelvin: "{{state_attr(light_entity, float(2000.0))}}"
+  # end_kelvin: "{{[state_attr(light_entity, 'max_kelvins')}}"
   tick_time: "{{float(seconds) / float(range_brightness)}}"
 trigger:
   - platform: time_pattern
@@ -92,8 +93,8 @@ action:
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
     data:
-      brightness: "{{ start_brightness }}"
-      color_temp: "{{ start_mired if state_attr(light_entity, 'min_mireds') != None else omit }}"
+      brightness: "{{ start_brightness | float(5) }}"
+      color_temp: "{{ start_kelvin | float(2500) }}"
     entity_id: !input "light_entity"
   - repeat:
       while:
@@ -104,13 +105,8 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: "{{int(60)}}"
-            color_temp: >
-              {% if state_attr(light_entity, 'min_mireds') != None %}
-                {{ (float(end_mired) + (float(start_mired) - float(end_mired)) * ((as_timestamp(sensor_time) - as_timestamp(now())) / float(seconds))) | int(0) }}
-              {% else %}
-                {{ omit }}
-              {% endif %}
+            brightness: "{{float(60)}}"
+            color_temp: "{{float(5000)}}"
           entity_id: !input "light_entity"
   - choose: []
     default: !input "post_sunrise_actions"
