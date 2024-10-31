@@ -104,7 +104,7 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: "{{(float(start_brightness) + ((as_timestamp(sensor_time) - as_timestamp(now())/float(seconds)))*(float(range_brightness)))| int(0)}}"
+            brightness: 50
             color_temp: >
               {% if state_attr(light_entity, 'min_mireds') != None %}
                 {{ (float(end_mired) + (float(start_mired) - float(end_mired)) * ((as_timestamp(sensor_time) - as_timestamp(now())) / float(seconds))) | int(0) }}
