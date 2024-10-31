@@ -71,7 +71,6 @@ blueprint:
         action: {}
 variables:
   light_entity: !input "light_entity"
-  # sensor: !input "timestamp_sensor"
   sunrise_duration: !input "sunrise_duration"
   start_brightness: !input "start_brightness"
   end_brightness: !input "end_brightness"
@@ -105,8 +104,7 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: >
-              {{ (float(end_brightness) - (float(range_brightness) * (as_timestamp(sensor_time) - as_timestamp(now())) / float(seconds))) | int(0) }}
+            brightness: "{{(float(start_brightness) + ((as_timestamp(sensor_time) - as_timestamp(now())/float(seconds)))*(float(range_brightness)))| int(0)}}"
             color_temp: >
               {% if state_attr(light_entity, 'min_mireds') != None %}
                 {{ (float(end_mired) + (float(start_mired) - float(end_mired)) * ((as_timestamp(sensor_time) - as_timestamp(now())) / float(seconds))) | int(0) }}
