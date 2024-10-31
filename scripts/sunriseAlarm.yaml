@@ -87,7 +87,7 @@ trigger:
 condition: []
 action:
   - variables:
-      sensor_time: "{{ manual_time }}"
+      sensor_time: "{{ as_timestamp(manual_time) }}"
   - choose: []
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
