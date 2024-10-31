@@ -78,7 +78,7 @@ variables:
   manual_time: !input "manual_time"
   seconds: "{{float(sunrise_duration) * 60}}"
   start_kelvin: "{{float(2000)}}"
-  end_kelvin: !input "max_kelvin"
+  end_kelvin: !input "end_kelvin"
   # start_kelvin: "{{state_attr(light_entity, float(2000.0))}}"
   # end_kelvin: "{{[state_attr(light_entity, 'max_kelvins')}}"
   tick_time: "{{float(seconds) / float(range_brightness)}}"
@@ -106,7 +106,7 @@ action:
         - service: light.turn_on
           data:
             brightness: "{{float(60)}}"
-            color_temp: "{{float(5000)}}"
+            color_temp: "{{float(end_kelvin)}}"
           entity_id: !input "light_entity"
   - choose: []
     default: !input "post_sunrise_actions"
