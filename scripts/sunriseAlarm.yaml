@@ -82,7 +82,11 @@ variables:
   tick_time: "{{float(seconds) / float(range_brightness)}}"
   start_time: "{{ (today_at(manual_time) - timedelta(minutes=25)).strftime('%H:%M') }}"
 trigger:
-  - platform: template
+  - platform: time_pattern
+    minutes: "/1"
+
+condition:
+  - condition: template
     value_template: "{{ now().strftime('%H:%M') == start_time }}"
 
 condition: []
