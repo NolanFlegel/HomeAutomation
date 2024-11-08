@@ -12,7 +12,7 @@ blueprint:
     manual_time:
       name: Manual alarm time
       description: Time to trigger alarm
-      default: "06:45:00"
+      default: "06:44:00"
       selector:
         time: {}
     sunrise_duration:
@@ -82,11 +82,7 @@ variables:
   tick_time: "{{float(seconds) / float(range_brightness)}}"
   start_time: "{{ (today_at(manual_time) - timedelta(minutes=sunrise_duration)).strftime('%H:%M') }}"
 trigger:
-  - platform: time_pattern
-    minutes: "/1"
-
-condition:
-  - condition: template
+  - platform: template
     value_template: "{{ now().strftime('%H:%M') == start_time }}"
 
 condition: []
