@@ -81,11 +81,15 @@ variables:
   end_kelvin: !input "end_kelvin"
   tick_time: "{{float(seconds) / float(range_brightness)}}"
   start_time: "{{ (today_at(manual_time) - timedelta(minutes=sunrise_duration)).strftime('%H:%M') }}"
-trigger:
-  - platform: template
-    value_template: "{{ now().strftime('%H:%M') == start_time }}"
 
-condition: []
+trigger:
+  - platform: time_pattern
+    minutes: "/1"
+
+condition:
+  - condition: template
+    value_template: "{{ now().strftime('%H:%M') == start_time }}" 
+
 action:
   - variables:
       sensor_time: "{{ today_at(manual_time) }}"
