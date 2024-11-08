@@ -12,13 +12,13 @@ blueprint:
     manual_time:
       name: Manual alarm time
       description: Time to trigger alarm
-      default: "06:44:00"
+      default: "06:45:00"
       selector:
         time: {}
     sunrise_duration:
       name: Sunrise duration
       description: The sunrise will start the configured number of minutes before the timestamp.
-      default: 25
+      default: 30
       selector:
         number:
           min: 5.0
@@ -97,13 +97,6 @@ action:
       brightness_steps: "{{ (float(end_brightness) - float(start_brightness)) / sunrise_duration }}"
   - choose: []
     default: !input "pre_sunrise_actions"
-  - service: logbook.log
-    data:
-      name: Sunrise Brightness
-      message: >-
-        TimeTrigger: {{now().strftime('%H:%M')}}
-        StartTime: {{ start_time}}
-        Condition: {{ now().strftime('%H:%M') == start_time }}
   - service: light.turn_on
     data:
       brightness: "{{ float(start_brightness) | float(10) }}"
