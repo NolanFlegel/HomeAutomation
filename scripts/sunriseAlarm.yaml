@@ -12,7 +12,7 @@ blueprint:
     manual_time:
       name: Manual alarm time
       description: Time to trigger alarm
-      default: "06:30:00"
+      default: "06:45:00"
       selector:
         time: {}
     sunrise_duration:
@@ -116,14 +116,6 @@ action:
             {{ 0 < float(as_timestamp(sensor_time, now())) - float(as_timestamp(now(), now())) <= float(seconds) }}
       sequence:
         - delay: "{{ tick_time }}"
-        - service: logbook.log
-          data:
-            name: Sunrise Brightness
-            message: >-
-              Brightness: {{float(state_attr(light_entity, 'brightness')) }}
-              Brightness_steps: {{float(brightness_steps)}}
-              Color_temp: {{float(state_attr(light_entity, 'color_temp_kelvin'))}}
-              Color_steps: {{float(kelvin_steps)}}
         - service: light.turn_on
           data:
             brightness: "{{ float(state_attr(light_entity, 'brightness')) + float(brightness_steps) }}"
