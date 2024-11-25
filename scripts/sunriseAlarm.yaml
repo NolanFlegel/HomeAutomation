@@ -9,17 +9,16 @@ blueprint:
       selector:
         entity:
           domain: light
-    input_datetime:
-      manual_time:
-        name: Manual alarm time
-        description: Time to trigger alarm
-        default: "06:30:00"
-        has_date: false
-        has_time: true
+    manual_time:
+      name: Manual alarm time
+      description: Time to trigger alarm
+      default: "06:45:00"
+      selector:
+        time: {}
     sunrise_duration:
       name: Sunrise duration
       description: The sunrise will start the configured number of minutes before the timestamp.
-      default: 25
+      default: 30
       selector:
         number:
           min: 5.0
@@ -54,7 +53,7 @@ blueprint:
       selector:
         number:
           min: 2000.0
-          max: 6500.0
+          max: 5000.0
           step: 50.0
           mode: slider
           unit_of_measurement: kelvin
@@ -80,22 +79,28 @@ variables:
   seconds: "{{float(sunrise_duration) * 60}}"
   start_kelvin: "{{float(2000)}}"
   end_kelvin: !input "end_kelvin"
-  # start_kelvin: "{{state_attr(light_entity, float(2000.0))}}"
-  # end_kelvin: "{{[state_attr(light_entity, 'max_kelvins')}}"
   tick_time: "{{float(seconds) / float(range_brightness)}}"
+  start_time: "{{ (today_at(manual_time) - timedelta(minutes=sunrise_duration)).strftime('%H:%M') }}"
+
 trigger:
   - platform: time_pattern
-    minutes: "*"
-condition: []
+    minutes: "/1"
+
+condition:
+  - condition: template
+    value_template: "{{ now().strftime('%H:%M') == start_time }}" 
+
 action:
   - variables:
-      sensor_time: "{{ as_timestamp(manual_time) }}"
+      sensor_time: "{{ today_at(manual_time) }}"
+      kelvin_steps: "{{ (float(end_kelvin) - float(start_kelvin)) / sunrise_duration }}"
+      brightness_steps: "{{ (float(end_brightness) - float(start_brightness)) / sunrise_duration }}"
   - choose: []
     default: !input "pre_sunrise_actions"
   - service: light.turn_on
     data:
-      brightness: "{{ start_brightness | float(5) }}"
-      color_temp: "{{ start_kelvin | float(2500) }}"
+      brightness: "{{ float(start_brightness) | float(10) }}"
+      color_temp: "{{ float(start_kelvin) | float(2500) }}"
     entity_id: !input "light_entity"
   - repeat:
       while:
@@ -106,8 +111,8 @@ action:
         - delay: "{{ tick_time }}"
         - service: light.turn_on
           data:
-            brightness: "{{float(60)}}"
-            color_temp: "{{float(end_kelvin)}}"
+            brightness: "{{ float(state_attr(light_entity, 'brightness')) + float(brightness_steps) }}"
+            color_temp_kelvin: "{{ float(state_attr(light_entity, 'color_temp_kelvin')) + float(kelvin_steps) }}"
           entity_id: !input "light_entity"
   - choose: []
     default: !input "post_sunrise_actions"
