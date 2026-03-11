@@ -88,7 +88,7 @@ trigger:
 
 condition:
   - condition: template
-    value_template: "{{ now().strftime('%H:%M') == start_time }}" 
+    value_template: "{{ now().strftime('%H:%M') == start_time }}"
 
 action:
   - variables:
@@ -100,7 +100,7 @@ action:
   - service: light.turn_on
     data:
       brightness: "{{ float(start_brightness) | float(10) }}"
-      color_temp: "{{ float(start_kelvin) | float(2500) }}"
+      color_temp_kelvin: "{{ float(start_kelvin) | float(2500) }}"
     entity_id: !input "light_entity"
   - repeat:
       while:
